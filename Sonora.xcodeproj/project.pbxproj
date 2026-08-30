@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EE16235330433A2700E00B21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE16235130433A2700E00B21 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		EEC4FADB303F3A4500FC3BAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,10 +28,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EE16235130433A2700E00B21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EEC4FACD303F3A4400FC3BAD /* Sonora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sonora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEC4FADA303F3A4500FC3BAD /* SonoraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonoraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEC4FAE4303F3A4500FC3BAD /* SonoraUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonoraUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EE1623633043687D00E00B21 /* Exceptions for "SonoraTests" folder in "Sonora" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SonoraApp.swift,
+			);
+			target = EEC4FACC303F3A4400FC3BAD /* Sonora */;
+		};
+		EE1623643043687D00E00B21 /* Exceptions for "SonoraTests" folder in "SonoraTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SonoraApp.swift,
+			);
+			target = EEC4FAD9303F3A4500FC3BAD /* SonoraTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EEC4FACF303F3A4400FC3BAD /* Sonora */ = {
@@ -37,6 +59,10 @@
 		};
 		EEC4FADD303F3A4500FC3BAD /* SonoraTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EE1623633043687D00E00B21 /* Exceptions for "SonoraTests" folder in "Sonora" target */,
+				EE1623643043687D00E00B21 /* Exceptions for "SonoraTests" folder in "SonoraTests" target */,
+			);
 			path = SonoraTests;
 			sourceTree = "<group>";
 		};
@@ -75,6 +101,7 @@
 		EEC4FAC4303F3A4400FC3BAD = {
 			isa = PBXGroup;
 			children = (
+				EE16235130433A2700E00B21 /* Assets.xcassets */,
 				EEC4FACF303F3A4400FC3BAD /* Sonora */,
 				EEC4FADD303F3A4500FC3BAD /* SonoraTests */,
 				EEC4FAE7303F3A4500FC3BAD /* SonoraUITests */,
@@ -212,6 +239,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE16235330433A2700E00B21 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

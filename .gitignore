@@ -11,3 +11,6 @@ xcuserdata/
 .build/
 .swiftpm/
 Package.resolved
+
+# Audio files
+*.mp3

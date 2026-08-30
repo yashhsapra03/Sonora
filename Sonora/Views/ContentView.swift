@@ -12,7 +12,10 @@ struct ContentView: View {
     @State private var songs: [Song] = []
     @State private var currentSong: Song?
     @State private var isPlaying = false
+    @State private var showingNowPlaying = false
     @State private var player: AVPlayer?
+    @State private var searchTask: Task<Void,Never>? = nil
+    @State private var callCount = 0
     @State private var searchText = ""
     var body: some View {
         NavigationStack {
@@ -38,28 +41,42 @@ struct ContentView: View {
                         }
                     }
                     .onTapGesture {
-                        withAnimation {
-                            playSong(song: song)
-                        }
+                        playSong(song: song)
                     }
                 }
                 
                 if let currentSong {
                     NowPlayingBarView(song: currentSong,isPlaying: $isPlaying, playPauseTap: playPause)
+                        .onTapGesture {
+                            showingNowPlaying = true
+                        }
                 }
             }
             .searchable(text: $searchText,prompt: "Search a song")
-            .onSubmit(of: .search){
-                Task {
-                    songs = await searchSongs(term: searchText)
+            .fullScreenCover(isPresented: $showingNowPlaying) {
+               NowPlayingView(song: currentSong!, isPlaying: $isPlaying, playPauseTap: playPause)
+            }
+            .onChange(of: searchText) {
+                searchTask?.cancel()
+                
+                searchTask = Task {
+                    try? await Task.sleep(for: .seconds(0.5))
+                    
+                    if !Task.isCancelled {
+                        songs = await searchSongs(term: searchText)
+                    }
                 }
             }
             .navigationTitle("Sonora")
+            .task {
+                songs = await searchSongs(term: "Karan Aujla")
+            }
         }
         
     }
     
     func playSong(song: Song) {
+        
         guard let songURL = URL(string: song.previewUrl ?? "") else {
             print("Unable to play the song")
             return
@@ -73,12 +90,13 @@ struct ContentView: View {
     }
     
     func playPause() {
+        isPlaying.toggle()
+        
         if isPlaying {
             player?.pause()
         } else {
             player?.play()
         }
-        isPlaying.toggle()
     }
 }
 
