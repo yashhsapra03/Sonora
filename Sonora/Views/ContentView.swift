@@ -90,13 +90,12 @@ struct ContentView: View {
     }
     
     func playPause() {
-        isPlaying.toggle()
-        
         if isPlaying {
             player?.pause()
         } else {
             player?.play()
         }
+        isPlaying.toggle()
     }
 }
 
