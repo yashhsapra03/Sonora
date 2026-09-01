@@ -6,16 +6,13 @@
 //
 
 import SwiftUI
-import AVFoundation
 
 struct ContentView: View {
     @State private var songs: [Song] = []
-    @State private var currentSong: Song?
-    @State private var isPlaying = false
+    @State private var audioManager = AudioPlayerManager()
     @State private var showingNowPlaying = false
-    @State private var player: AVPlayer?
+    
     @State private var searchTask: Task<Void,Never>? = nil
-    @State private var callCount = 0
     @State private var searchText = ""
     var body: some View {
         NavigationStack {
@@ -41,12 +38,12 @@ struct ContentView: View {
                         }
                     }
                     .onTapGesture {
-                        playSong(song: song)
+                        audioManager.playSong(song: song)
                     }
                 }
                 
-                if let currentSong {
-                    NowPlayingBarView(song: currentSong,isPlaying: $isPlaying, playPauseTap: playPause)
+                if let currentSong = audioManager.currentSong {
+                    NowPlayingBarView(song: currentSong,isPlaying: $audioManager.isPlaying, playPauseTap: audioManager.playPause)
                         .onTapGesture {
                             showingNowPlaying = true
                         }
@@ -54,7 +51,9 @@ struct ContentView: View {
             }
             .searchable(text: $searchText,prompt: "Search a song")
             .fullScreenCover(isPresented: $showingNowPlaying) {
-               NowPlayingView(song: currentSong!, isPlaying: $isPlaying, playPauseTap: playPause)
+                if let currentSong = audioManager.currentSong {
+                    NowPlayingView(song: currentSong, isPlaying: $audioManager.isPlaying, playPauseTap: audioManager.playPause)
+                }
             }
             .onChange(of: searchText) {
                 searchTask?.cancel()
@@ -62,9 +61,13 @@ struct ContentView: View {
                 searchTask = Task {
                     try? await Task.sleep(for: .seconds(0.5))
                     
-                    if !Task.isCancelled {
-                        songs = await searchSongs(term: searchText)
-                    }
+                    guard !Task.isCancelled else { return }
+                    
+                    let results = await searchSongs(term: searchText)
+                    
+                    guard !Task.isCancelled else { return }
+                    
+                    songs = results
                 }
             }
             .navigationTitle("Sonora")
@@ -75,28 +78,7 @@ struct ContentView: View {
         
     }
     
-    func playSong(song: Song) {
-        
-        guard let songURL = URL(string: song.previewUrl ?? "") else {
-            print("Unable to play the song")
-            return
-        }
-        
-        player?.pause()
-        player = AVPlayer(url: songURL)
-        player?.play()
-        currentSong = song
-        isPlaying = true
-    }
     
-    func playPause() {
-        if isPlaying {
-            player?.pause()
-        } else {
-            player?.play()
-        }
-        isPlaying.toggle()
-    }
 }
 
 #Preview {
