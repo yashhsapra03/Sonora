@@ -43,7 +43,7 @@ struct ContentView: View {
                 }
                 
                 if let currentSong = audioManager.currentSong {
-                    NowPlayingBarView(song: currentSong,isPlaying: $audioManager.isPlaying, playPauseTap: audioManager.playPause)
+                    NowPlayingBarView(song: currentSong, playPauseTap: audioManager.playPause, audioManager: audioManager)
                         .onTapGesture {
                             showingNowPlaying = true
                         }
@@ -52,7 +52,7 @@ struct ContentView: View {
             .searchable(text: $searchText,prompt: "Search a song")
             .fullScreenCover(isPresented: $showingNowPlaying) {
                 if let currentSong = audioManager.currentSong {
-                    NowPlayingView(song: currentSong, isPlaying: $audioManager.isPlaying, playPauseTap: audioManager.playPause)
+                    NowPlayingView(song: currentSong, audioManager: audioManager, playPauseTap: audioManager.playPause)
                 }
             }
             .onChange(of: searchText) {

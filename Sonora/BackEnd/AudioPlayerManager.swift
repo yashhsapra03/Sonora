@@ -11,6 +11,7 @@ import AVFoundation
 class AudioPlayerManager {
     var currentSong: Song?
     var isPlaying = false
+    var isSeeking = false
     var currentTime: Double = 0
     var duration: Double = 0
     
@@ -39,9 +40,11 @@ class AudioPlayerManager {
         }
         
         // Update Song's Current Time every 0.5 seconds for Smooth UX
-        let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
+        let interval = CMTime(seconds: 0.05, preferredTimescale: 600)
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [ weak self ] time in
-            self?.currentTime = time.seconds
+            if self?.isSeeking == false {
+                self?.currentTime = time.seconds
+            }
         }
     }
     

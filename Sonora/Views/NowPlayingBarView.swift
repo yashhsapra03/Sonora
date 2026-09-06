@@ -9,8 +9,8 @@ import SwiftUI
 
 struct NowPlayingBarView: View {
     let song: Song
-    @Binding var isPlaying: Bool
     var playPauseTap: () -> Void
+    var audioManager: AudioPlayerManager
     var body: some View {
         HStack {
             AsyncImage(url: URL(string: song.artworkUrl100 ?? "")) { image in
@@ -36,7 +36,7 @@ struct NowPlayingBarView: View {
             Button {
                 playPauseTap()
             } label: {
-                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
                     .font(.system(size: 25))
             }
         }
@@ -54,11 +54,12 @@ struct NowPlayingBarView: View {
 }
 
 #Preview {
-    @Previewable @State var isPlaying = false
     
-    NowPlayingBarView(song: Song(trackId: 1779786209, trackName: "Wavy", artistName: "Karan Aujla", trackTimeMillis: 161000, collectionName: "Wavy - Single", artworkUrl100: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cd/df/5a/cddf5a8c-464e-3958-cf4a-7fac9e490aa5/5063616597178_cover.jpg/100x100bb.jpg", previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6e/d7/12/6ed71252-5ea1-e750-c32f-b022e6847471/mzaf_15658604173507661184.plus.aac.p.m4a"), isPlaying: $isPlaying,playPauseTap: {
-        isPlaying.toggle()
-    })
+    let audioManager = AudioPlayerManager()
+    
+    NowPlayingBarView(song: Song(trackId: 1779786209, trackName: "Wavy", artistName: "Karan Aujla", trackTimeMillis: 161000, collectionName: "Wavy - Single", artworkUrl100: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cd/df/5a/cddf5a8c-464e-3958-cf4a-7fac9e490aa5/5063616597178_cover.jpg/100x100bb.jpg", previewUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6e/d7/12/6ed71252-5ea1-e750-c32f-b022e6847471/mzaf_15658604173507661184.plus.aac.p.m4a"),playPauseTap: {
+        audioManager.playPause()
+    },audioManager: AudioPlayerManager())
 }
 
 
