@@ -21,18 +21,25 @@ class AudioPlayerManager {
     
     private var player: AVPlayer?
     private var timeObserver: Any?
+    private var endObserver: Any?
     
     func playSong() {
         guard let songURL = URL(string: currentSong?.previewUrl ?? "") else {
             print("Unable to play song")
             return
         }
-        removeTimeObserver() // Remove the old observer if any, before adding a new one
+        removeTimeObserver() // Remove the old time observer if any, before adding a new one
+        removeEndObserver() // Remove the old end observer if any, before adding a new one
         player?.pause() // Pause a song if already playing
         
         player = AVPlayer(url: songURL)
         player?.play()
         isPlaying = true
+        
+        // Setting up an observer to detect when a song ends and then performs the closure to play next song automatically
+        endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: player?.currentItem, queue: .main) { [ weak self ] _ in
+            self?.playNext()
+        }
         
         // Fetch the Duration of the song
         Task {
@@ -42,7 +49,7 @@ class AudioPlayerManager {
             }
         }
         
-        // Update Song's Current Time every 0.5 seconds for Smooth UX
+        // Update Song's Current Time every 0.05 seconds for Smooth UX
         let interval = CMTime(seconds: 0.05, preferredTimescale: 600)
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [ weak self ] time in
             if self?.isSeeking == false {
@@ -83,6 +90,13 @@ class AudioPlayerManager {
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)
             timeObserver = nil
+        }
+    }
+    
+    private func removeEndObserver() {
+        if let observer = endObserver {
+            NotificationCenter.default.removeObserver(observer)
+            endObserver = nil
         }
     }
     
