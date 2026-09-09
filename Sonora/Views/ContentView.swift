@@ -38,7 +38,11 @@ struct ContentView: View {
                         }
                     }
                     .onTapGesture {
-                        audioManager.playSong(song: song)
+                        audioManager.queue = songs
+                        audioManager.currentIndex = songs.firstIndex(where: {
+                            $0.id == song.id
+                        }) ?? 0
+                        audioManager.playSong()
                     }
                 }
                 
@@ -51,8 +55,8 @@ struct ContentView: View {
             }
             .searchable(text: $searchText,prompt: "Search a song")
             .fullScreenCover(isPresented: $showingNowPlaying) {
-                if let currentSong = audioManager.currentSong {
-                    NowPlayingView(song: currentSong, audioManager: audioManager, playPauseTap: audioManager.playPause)
+                if audioManager.currentSong != nil {
+                    NowPlayingView(audioManager: audioManager, playPauseTap: audioManager.playPause)
                 }
             }
             .onChange(of: searchText) {
@@ -72,7 +76,7 @@ struct ContentView: View {
             }
             .navigationTitle("Sonora")
             .task {
-                songs = await searchSongs(term: "Karan Aujla")
+                songs = await searchSongs(term: "Michael Jackson")
             }
         }
         
@@ -84,3 +88,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+                                                                            

@@ -9,7 +9,11 @@ import AVFoundation
 
 @Observable
 class AudioPlayerManager {
-    var currentSong: Song?
+    var queue: [Song] = []
+    var currentIndex: Int = 0
+    var currentSong: Song? {
+        queue.isEmpty ? nil : queue[currentIndex]
+    }
     var isPlaying = false
     var isSeeking = false
     var currentTime: Double = 0
@@ -18,8 +22,8 @@ class AudioPlayerManager {
     private var player: AVPlayer?
     private var timeObserver: Any?
     
-    func playSong(song: Song) {
-        guard let songURL = URL(string: song.previewUrl ?? "") else {
+    func playSong() {
+        guard let songURL = URL(string: currentSong?.previewUrl ?? "") else {
             print("Unable to play song")
             return
         }
@@ -28,7 +32,6 @@ class AudioPlayerManager {
         
         player = AVPlayer(url: songURL)
         player?.play()
-        currentSong = song
         isPlaying = true
         
         // Fetch the Duration of the song
@@ -55,6 +58,20 @@ class AudioPlayerManager {
             player?.play()
         }
         isPlaying.toggle()
+    }
+    
+    func playNext() {
+        if !queue.isEmpty && currentIndex < queue.count - 1 {
+            currentIndex += 1
+        }
+        playSong()
+    }
+    
+    func playPrevious() {
+        if !queue.isEmpty && currentIndex > 0 {
+            currentIndex -= 1
+        }
+        playSong()
     }
     
     func seek(to seconds: Double) {
