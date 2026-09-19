@@ -6,6 +6,8 @@
 //
 
 import AVFoundation
+import SwiftUI
+import SwiftData
 
 @Observable
 class AudioPlayerManager {
@@ -14,10 +16,12 @@ class AudioPlayerManager {
     var currentSong: Song? {
         queue.isEmpty ? nil : queue[currentIndex]
     }
+    var modelContext: ModelContext?
     var isPlaying = false
     var isSeeking = false
     var currentTime: Double = 0
     var duration: Double = 0
+    var dominantColor: Color = .clear
     
     private var player: AVPlayer?
     private var timeObserver: Any?
@@ -31,6 +35,7 @@ class AudioPlayerManager {
         removeTimeObserver() // Remove the old time observer if any, before adding a new one
         removeEndObserver() // Remove the old end observer if any, before adding a new one
         player?.pause() // Pause a song if already playing
+        
         
         player = AVPlayer(url: songURL)
         player?.play()
@@ -47,6 +52,7 @@ class AudioPlayerManager {
                 let seconds = try? await item.asset.load(.duration)
                 duration = seconds?.seconds ?? 0
             }
+            await dominantColor(from: currentSong?.artworkUrl100 ?? "")
         }
         
         // Update Song's Current Time every 0.05 seconds for Smooth UX
@@ -84,6 +90,54 @@ class AudioPlayerManager {
     func seek(to seconds: Double) {
         let time = CMTime(seconds: seconds, preferredTimescale: 600)
         player?.seek(to: time)
+    }
+    
+    func dominantColor(from imageURL: String) async {
+        guard let url = URL(string: imageURL) else { return print("Unable to get image URL") }
+        
+        guard let data = try? await URLSession.shared.data(from: url) else { return print("Unable to get image data")}
+        
+        if let uiImage = UIImage(data: data.0) {
+            if let ciImage = CIImage(image: uiImage) {
+                let filter = CIFilter(name: "CIAreaAverage")
+                filter?.setValue(ciImage, forKey: kCIInputImageKey)
+                filter?.setValue(ciImage.extent, forKey: kCIInputExtentKey)
+                
+                guard let outputImage = filter?.outputImage else { return }
+                
+                let context = CIContext()
+                
+                guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else { return }
+                
+                guard let pixelData = cgImage.dataProvider?.data else { return }
+                
+                let dataPtr = CFDataGetBytePtr(pixelData)
+                
+                let r = CGFloat(dataPtr?[0] ?? 0) / 255
+                let g = CGFloat(dataPtr?[1] ?? 0) / 255
+                let b = CGFloat(dataPtr?[2] ?? 0) / 255
+                
+                dominantColor = Color(red: r, green: g, blue: b)
+            }
+        }
+        
+    }
+    
+    func saveToRecentlyPlayed(song: Song) {
+        let savedSong = RecentlyPlayedSong(trackName: song.trackName, artistName: song.artistName, artworkUrl100: song.artworkUrl100 ?? "", previewUrl: song.previewUrl ?? "", playedAt: Date())
+        
+        let descriptor = FetchDescriptor<RecentlyPlayedSong>(sortBy: [SortDescriptor(\.playedAt)])
+        
+        if let all = try? modelContext?.fetch(descriptor) {
+            if let existing = all.first(where: { $0.trackName == song.trackName }) {
+                existing.playedAt = Date()
+            } else {
+                if all.count > 10 {
+                    modelContext?.delete(all.first!)
+                }
+                modelContext?.insert(savedSong)
+            }
+        }
     }
     
     private func removeTimeObserver() {

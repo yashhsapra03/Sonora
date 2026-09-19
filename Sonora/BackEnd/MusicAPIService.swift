@@ -12,7 +12,7 @@ func searchSongs(term: String) async -> [Song] {
           let url = URL(string: "https://itunes.apple.com/search?term=\(encodedTerm)&media=music&limit=10") else {
         return []
     }
-    
+
     do {
         let (data, _) = try await URLSession.shared.data(from: url)
         let response = try JSONDecoder().decode(SearchResponse.self, from: data)
@@ -23,3 +23,6 @@ func searchSongs(term: String) async -> [Song] {
         return []
     }
 }
+
+
+

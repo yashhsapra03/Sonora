@@ -24,8 +24,9 @@ struct NowPlayingView: View {
                     .background(.ultraThinMaterial)
                     .clipShape(.circle)
             }
-            .padding(.top,15)
+            .safeAreaPadding(.top)
             .padding(.bottom,20)
+            
         
             
             // Song's Art Work
@@ -113,9 +114,9 @@ struct NowPlayingView: View {
             }
             .padding()
           //  .background(.ultraThinMaterial)
-            .padding(.bottom,70)
+            .safeAreaPadding(.bottom,70)
         }
-        
+        .background(LinearGradient(colors: [audioManager.dominantColor.opacity(0.3),audioManager.dominantColor], startPoint: .top, endPoint: .bottom))
     }
     
     func formatTime(_ seconds: Double) -> String {

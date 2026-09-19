@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct SonoraApp: App {
@@ -13,5 +14,6 @@ struct SonoraApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: RecentlyPlayedSong.self)
     }
 }
