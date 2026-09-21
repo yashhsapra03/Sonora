@@ -24,7 +24,6 @@ struct NowPlayingView: View {
                     .background(.ultraThinMaterial)
                     .clipShape(.circle)
             }
-            .safeAreaPadding(.top)
             .padding(.bottom,20)
             
         
@@ -39,15 +38,15 @@ struct NowPlayingView: View {
                 .frame(width: 340, height: 350)
                 .clipShape(.rect(cornerRadius: 20))
             
-                VStack(spacing: 10){
+                VStack(spacing: 0){
                     // Song name and Artist name
                     HStack{
-                        VStack(alignment: .leading) {
-                            Text(currentSong.trackName).font(.title).bold()
+                        VStack(alignment: .leading,spacing: -4) {
+                            Text(currentSong.trackName).font(.title2).bold()
                             Text(currentSong.artistName).foregroundStyle(.secondary)
                         }
-                        .padding(.top,30)
-                        .padding(.horizontal,15)
+                        .padding(.top,20)
+                        .safeAreaPadding(.horizontal,20)
                         
                         Spacer()
                         
@@ -56,7 +55,7 @@ struct NowPlayingView: View {
                 Spacer()
                 
                 // Progress Bar along with Timeline
-                VStack(spacing: 8) {
+                VStack {
                     Slider(value: $sliderValue, in: 0...max(audioManager.duration,1), onEditingChanged: { isSeeking in
                         audioManager.isSeeking = isSeeking
                         if !isSeeking {
@@ -74,7 +73,7 @@ struct NowPlayingView: View {
                         Spacer()
                         Text(formatTime(audioManager.duration))
                     }
-                    .font(.caption)
+                    .font(.system(size: 10))
                     
                 }
                 .padding(.horizontal,10)
@@ -95,7 +94,7 @@ struct NowPlayingView: View {
                     playPauseTap()
                 } label: {
                     Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 50))
+                        .font(.system(size: 45))
                         .padding()
                         .foregroundStyle(.primary)
                         //.tint(.primary)
@@ -116,6 +115,7 @@ struct NowPlayingView: View {
           //  .background(.ultraThinMaterial)
             .safeAreaPadding(.bottom,70)
         }
+        .safeAreaPadding(.top,20)
         .background(LinearGradient(colors: [audioManager.dominantColor.opacity(0.3),audioManager.dominantColor], startPoint: .top, endPoint: .bottom))
     }
     
